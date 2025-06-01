@@ -1,3 +1,6 @@
+import argparse
+
+
 def ask_for_form() -> list[str]:
     """
     Fragt den Benutzer nach Fragen für ein Formular und gibt eine Liste der Fragen zurück.
@@ -55,12 +58,39 @@ def read_form(filename: str = "form.txt") -> dict[str, str]:
 
 
 def run():
+    parser = argparse.ArgumentParser(description="Formular Assistant")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "-c",
+        "--create",
+        action="store_true",
+        help="Erstelle ein neues Formular",
+    )
+    group.add_argument(
+        "-r",
+        "--read",
+        action="store_true",
+        help="Lese ein bestehendes Formular",
+    )
+    parser.add_argument(
+        "-f",
+        "--file",
+        type=str,
+        default="form.txt",
+        help="Dateiname des Formulars (Standard: form.txt)",
+    )
+
+    args = parser.parse_args()
+
     print("Hello, Formular Assistant!")
 
-    #questions = ask_for_form()
-    #create_form(questions)
-    #print("Formular erstellt.")
+    if args.create:
+        questions = ask_for_form()
+        create_form(questions, args.file)
+        print("Formular erstellt.")
 
-    answers = read_form()
-    print("Formular gelesen:")
-    print(answers)
+    elif args.read:
+        answers = read_form(args.file)
+        print("Formular gelesen:")
+        for question, answer in answers.items():
+            print(f"- {question} : {answer}")
